@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.phillyopen.mytracks.cyclephilly.tabs;
+package org.phillyopen.mytracks.cyclephilly.tab;
 
 import android.content.Context;
 import android.graphics.Typeface;

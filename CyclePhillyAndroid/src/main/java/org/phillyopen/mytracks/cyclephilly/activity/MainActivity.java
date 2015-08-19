@@ -23,15 +23,12 @@ package org.phillyopen.mytracks.cyclephilly.activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ViewAnimator;
 
-import com.firebase.client.utilities.LogWrapper;
-
 import org.phillyopen.mytracks.cyclephilly.R;
-import org.phillyopen.mytracks.cyclephilly.tabs.SlidingTabsColorsFragment;
+import org.phillyopen.mytracks.cyclephilly.tab.SlidingTabsColorsFragment;
 
 
 
