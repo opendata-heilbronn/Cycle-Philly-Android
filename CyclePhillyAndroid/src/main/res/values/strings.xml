@@ -74,4 +74,19 @@
 	<string name="mapOfTrip">Map of your trip:</string>
 	<string name="ride_indego_nearest">Nearby Stations</string>
 
+	<string name="intro_message">
+	<![CDATA[
+
+
+            A more advanced sample which shows how to use SlidingTabLayout to display a custom
+            ViewPager title strip, with custom coloring for each tab.
+
+
+        ]]>
+	</string>
+
+    <string name="tab_map">Map</string>
+    <string name="tab_my_trips">My Trips</string>
+    <string name="tab_indego_stations">Indego Stations</string>
+
 </resources>

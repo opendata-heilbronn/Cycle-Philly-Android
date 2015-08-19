@@ -1,3 +1,5 @@
+apply plugin: 'com.android.application'
+
 task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
 }
@@ -11,8 +13,6 @@ buildscript {
     }
 }
 
-apply plugin: 'android'
-
 repositories {
     mavenCentral()
 }
@@ -20,18 +20,47 @@ repositories {
 android {
     compileSdkVersion 21
     buildToolsVersion '21.1.2'
+
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 21
     }
+
     productFlavors {
+        mainActivity {
+            manifestPlaceholders = [mainCategory: "android.intent.category.LAUNCHER"]
+        }
+        mainInput {
+            manifestPlaceholders = [mainCategory: "android.intent.category.LAUNCHER"]
+        }
     }
+
     packagingOptions {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE-FIREBASE.txt'
         exclude 'META-INF/NOTICE'
     }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            debuggable false
+            jniDebuggable false
+        }
+        debug {
+            debuggable true
+        }
+    }
+
+    sourceSets {
+        debug.setRoot('build-types/debug')
+        release.setRoot('build-types/release')
+    }
+
 }
+
+
+
 
 dependencies {
     compile 'com.android.support:support-v4:22.1.1'
