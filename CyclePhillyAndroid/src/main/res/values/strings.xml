@@ -74,4 +74,8 @@
 	<string name="mapOfTrip">Map of your trip:</string>
 	<string name="ride_indego_nearest">Nearby Stations</string>
 
+    <string name="tab_map">Map</string>
+    <string name="tab_my_trips">My Trips</string>
+    <string name="tab_indego_stations">Indego Stations</string>
+
 </resources>
