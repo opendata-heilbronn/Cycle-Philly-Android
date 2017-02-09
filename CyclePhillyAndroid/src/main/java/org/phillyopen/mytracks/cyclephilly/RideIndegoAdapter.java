@@ -6,10 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.google.firebase.database.DatabaseReference;
+import de.grundid.plusrad.R;
 
-import com.firebase.client.Firebase;
-
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,8 +18,8 @@ import java.util.List;
 public class RideIndegoAdapter extends RecyclerView.Adapter<RideIndegoAdapter.MyViewHolder>{
 
     private LayoutInflater inflater;
-    private Firebase mRef;
-    private List<IndegoStation> mstations = Collections.emptyList();
+	private DatabaseReference mRef;
+	private List<IndegoStation> mstations = Collections.emptyList();
     private Context mContext;
 
     public RideIndegoAdapter(Context context,List<IndegoStation> stations){

@@ -25,8 +25,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import org.phillyopen.mytracks.cyclephilly.R;
+import de.grundid.plusrad.R;
 
 import java.util.ArrayList;
 import java.util.List;

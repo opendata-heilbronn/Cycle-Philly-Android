@@ -142,3 +142,7 @@ RemoteSystemsTempFiles/
 
 # gradle
 .gradle/
+
+*.keystore
+google-services.json
+

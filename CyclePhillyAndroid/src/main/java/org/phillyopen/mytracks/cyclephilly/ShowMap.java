@@ -30,10 +30,6 @@
 //
 package org.phillyopen.mytracks.cyclephilly;
 
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -44,18 +40,16 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.*;
+import de.grundid.plusrad.R;
 
-import org.phillyopen.mytracks.cyclephilly.R;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ShowMap extends FragmentActivity {
 	List<Polyline> mapTracks;
@@ -80,72 +74,73 @@ public class ShowMap extends FragmentActivity {
 				mapTracks = new ArrayList<Polyline>();
 			}
 
-	        Bundle cmds = getIntent().getExtras();
-            long tripid = cmds.getLong("showtrip");
-            TripData trip = TripData.fetchTrip(this, tripid);
-
-            // map bounds
-            final LatLngBounds bounds = new LatLngBounds.Builder()
-            	.include(new LatLng(trip.lathigh, trip.lgtlow))
-            	.include(new LatLng(trip.latlow, trip.lgthigh))
-            	.build();
 
 			// check if already instantiated
 			if (mMap == null) {
-				mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-				layout = (LinearLayout)findViewById(R.id.LinearLayout01);
-				ViewTreeObserver vto = layout.getViewTreeObserver();
-				vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-					@Override
-				    public void onGlobalLayout() {
-				        layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-				        // Center & zoom the map after map layout completes
-				        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 5));
-				    }
-				});
+				((SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map)).getMapAsync(
+						new OnMapReadyCallback() {
+
+							@Override
+							public void onMapReady(GoogleMap googleMap) {
+								continueWithMap(googleMap);
+							}
+						});
 			} else {
 				mMap.clear();
 			}
-
-			// check if got map
-			if (mMap == null) {
-				Log.d("Couldn't get map fragment!", "No map fragment");
-				return;
-			}
-			
-			// customize info window
-			mMap.setInfoWindowAdapter(new BikeRackInfoWindow(getLayoutInflater()));
-
-            // Show trip details
-            TextView t1 = (TextView) findViewById(R.id.TextViewT1);
-            TextView t2 = (TextView) findViewById(R.id.TextViewT2);
-            TextView t3 = (TextView) findViewById(R.id.TextViewT3);
-            t1.setText(trip.purp);
-            t2.setText(trip.info);
-            t3.setText(trip.fancystart);
-
-			if (gpspoints == null) {
-				AddPointsToMapLayerTask maptask = new AddPointsToMapLayerTask();
-				maptask.execute(trip);
-			} else {
-				mapTracks.add(gpspoints);
-			}
-
-			if (trip.status < TripData.STATUS_SENT
-					&& cmds != null
-					&& cmds.getBoolean("uploadTrip", false)) {
-			    // And upload to the cloud database, too!  W00t W00t!
-                TripUploader uploader = new TripUploader(ShowMap.this);
-                uploader.execute(trip.tripid);
-                Log.d("trip status","status not sent!");
-			}else{
-                Log.d("trip status","Status "+trip.status);
-
-            }
-
-		} catch (Exception e) {
-			Log.d("Map error",e.toString(), e);
 		}
+		catch (Exception e) {
+			Log.d("Map error", e.toString(), e);
+		}
+	}
+
+	private void continueWithMap(GoogleMap googleMap) {
+		this.mMap = googleMap;
+		layout = (LinearLayout)findViewById(R.id.LinearLayout01);
+		Bundle cmds = getIntent().getExtras();
+		long tripid = cmds.getLong("showtrip");
+		TripData trip = TripData.fetchTrip(this, tripid);
+		// map bounds
+		final LatLngBounds bounds = new LatLngBounds.Builder()
+				.include(new LatLng(trip.lathigh, trip.lgtlow))
+				.include(new LatLng(trip.latlow, trip.lgthigh))
+				.build();
+		ViewTreeObserver vto = layout.getViewTreeObserver();
+		vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+
+			@Override
+			public void onGlobalLayout() {
+				layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+				// Center & zoom the map after map layout completes
+				mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 5));
+			}
+		});
+		// customize info window
+		mMap.setInfoWindowAdapter(new BikeRackInfoWindow(getLayoutInflater()));
+		// Show trip details
+		TextView t1 = (TextView)findViewById(R.id.TextViewT1);
+		TextView t2 = (TextView)findViewById(R.id.TextViewT2);
+		TextView t3 = (TextView)findViewById(R.id.TextViewT3);
+		t1.setText(trip.purp);
+		t2.setText(trip.info);
+		t3.setText(trip.fancystart);
+		if (gpspoints == null) {
+			AddPointsToMapLayerTask maptask = new AddPointsToMapLayerTask();
+			maptask.execute(trip);
+		} else {
+			mapTracks.add(gpspoints);
+		}
+		if (trip.status < TripData.STATUS_SENT
+				&& cmds != null
+				&& cmds.getBoolean("uploadTrip", false)) {
+			// And upload to the cloud database, too!  W00t W00t!
+			TripUploader uploader = new TripUploader(ShowMap.this);
+			uploader.execute(trip.tripid);
+			Log.d("trip status", "status not sent!");
+		} else {
+			Log.d("trip status", "Status " + trip.status);
+		}
+
 	}
 
 	private class AddPointsToMapLayerTask extends AsyncTask<TripData, Integer, PolylineOptions> {

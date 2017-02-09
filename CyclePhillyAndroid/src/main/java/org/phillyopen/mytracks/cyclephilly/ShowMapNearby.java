@@ -8,34 +8,27 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnTouchListener;
-import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import de.grundid.plusrad.R;
 
 public class ShowMapNearby extends FragmentActivity {
 	
 	private final static int MENU_SHOW_HIDE_RACKS = 0;
     private final static int MENU_SHOW_HIDE_ROUTES = 1;
     private final static int MENU_ABOUT = 2;
-    
+
 	private GoogleMap mMap;
 	private TileOverlay racksOverlay;
 	private TileOverlay routesOverlay;
@@ -83,42 +76,44 @@ public class ShowMapNearby extends FragmentActivity {
 		
 		// check if already instantiated
 		if (mMap == null) {
-			mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-			mMap.setMyLocationEnabled(true);
-			layout = (LinearLayout)findViewById(R.id.LinearLayout01);
-			ViewTreeObserver vto = layout.getViewTreeObserver();
-			vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-				@Override
-			    public void onGlobalLayout() {
-			        layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-			        
-			        // Center & zoom the map after map layout completes
-			        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mySpot, 15));
-			    }
-			});
+			((SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map)).getMapAsync(
+					new OnMapReadyCallback() {
+
+						@Override
+						public void onMapReady(GoogleMap googleMap) {
+							continueWithMap(googleMap);
+						}
+					});
 		} else {
 			mMap.clear();
 		}
+	}
 
-		// check if got map
-		if (mMap == null) {
-			Log.e("Couldn't get map fragment!", "No map fragment");
-			return;
-		}
-		
+	private void continueWithMap(GoogleMap mapView) {
+		this.mMap = mapView;
+		mMap.setMyLocationEnabled(true);
+		layout = (LinearLayout)findViewById(R.id.LinearLayout01);
+		ViewTreeObserver vto = layout.getViewTreeObserver();
+		vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+
+			@Override
+			public void onGlobalLayout() {
+				layout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+				// Center & zoom the map after map layout completes
+				mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mySpot, 15));
+			}
+		});
+
 		mMap.setInfoWindowAdapter(new BikeRackInfoWindow(getLayoutInflater()));
-		
 		// use mapbox map with base layer
 		//TileOverlayOptions tileOpts = new TileOverlayOptions();
 		//tileOpts.tileProvider(new MapTileProvider("banderkat.map-xdg8ubm7"));
 		//mMap.setMapType(GoogleMap.MAP_TYPE_NONE);
 		//mMap.addTileOverlay(tileOpts);
-		
 		TileOverlayOptions racksOpts = new TileOverlayOptions();
 		racksOpts.tileProvider(new MapTileProvider("banderkat.PhillyBikeRacks"));
 		TileOverlayOptions routesOpts = new TileOverlayOptions();
 		routesOpts.tileProvider(new MapTileProvider("banderkat.philly_bikeroutes"));
-		
 		routesOverlay = mMap.addTileOverlay(routesOpts);
 		racksOverlay = mMap.addTileOverlay(racksOpts);
 	}

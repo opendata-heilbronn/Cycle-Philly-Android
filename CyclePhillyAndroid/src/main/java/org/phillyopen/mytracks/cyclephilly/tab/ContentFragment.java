@@ -22,8 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import org.phillyopen.mytracks.cyclephilly.R;
+import de.grundid.plusrad.R;
 
 /**
  * Simple Fragment used to display some meaningful content for each page in the sample's

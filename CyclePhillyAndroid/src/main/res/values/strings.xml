@@ -2,7 +2,7 @@
 <resources>
 	<string name="recording_title">Cycle Philly</string>
 	<string name="icon_sun">&#xe601;</string>
-	<string name="app_name">Cycle Philly</string>
+    <string name="app_name">PlusRad</string>
 	<string name="postUrl">http://www.cyclephilly.org/post/</string>
 	<string name="icon">Bicycle Parking</string>
 	<string name="previous_trips">Saved Trips:</string>

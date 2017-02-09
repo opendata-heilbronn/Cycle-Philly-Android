@@ -3,9 +3,9 @@ package org.phillyopen.mytracks.cyclephilly;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.model.Marker;
+import de.grundid.plusrad.R;
 
 public class BikeRackInfoWindow implements InfoWindowAdapter {
 	LayoutInflater inflater=null;

@@ -3,8 +3,7 @@ package org.phillyopen.mytracks.cyclephilly.activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-
-import org.phillyopen.mytracks.cyclephilly.R;
+import de.grundid.plusrad.R;
 import org.phillyopen.mytracks.cyclephilly.tab.SlidingTabsColorsFragment;
 
 

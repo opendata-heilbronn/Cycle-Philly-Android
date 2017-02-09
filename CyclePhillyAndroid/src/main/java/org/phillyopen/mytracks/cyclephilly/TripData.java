@@ -30,15 +30,14 @@
 
 package org.phillyopen.mytracks.cyclephilly;
 
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.location.Location;
-
 import com.google.android.gms.maps.model.LatLng;
+
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TripData {
 	long tripid;
@@ -56,8 +55,7 @@ public class TripData {
 
 	double totalPauseTime = 0;
 	double pauseStartedAt = 0;
-
-	DbAdapter mDb;
+	private DbAdapter mDb;
 
     public static int STATUS_INCOMPLETE = 0;
     public static int STATUS_COMPLETE = 1;
@@ -131,7 +129,7 @@ public class TripData {
 	    mDb.close();
 	}
 
-	void createTripInDatabase(Context c) {
+	private void createTripInDatabase(Context c) {
 		mDb.open();
 		tripid = mDb.createTrip();
 		mDb.close();
