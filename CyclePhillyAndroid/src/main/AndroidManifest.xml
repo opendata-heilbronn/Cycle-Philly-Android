@@ -25,7 +25,7 @@
             android:normalScreens="true"/>
 
     <application android:name=".PlusRadApplication"
-                 android:icon="@drawable/icon72"
+                 android:icon="@mipmap/ic_launcher"
                  android:label="@string/app_name"
                  android:allowBackup="true">
         <activity

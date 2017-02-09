@@ -1,96 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:id="@+id/main"
-    android:weightSum="1"
-    android:background="#ff020202">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:id="@+id/main">
 
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:background="#62288abe">
-
-        <TextView
-            android:layout_width="30dp"
+    <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/weatherView"
-            android:textStyle="bold"
-            android:textSize="13dp"
-            android:textColor="#ffdddddd"
-            android:paddingLeft="10dip"
-            android:paddingRight="10dip"
-            android:paddingTop="5dp"
-            android:autoText="true" />
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <TextView
-            android:layout_width="285dp"
-            android:layout_height="wrap_content"
-            android:text="@string/currentTemperature"
-            android:id="@+id/temperatureView"
-            android:textStyle="bold"
-            android:textSize="13dp"
-            android:textColor="#ffdddddd"
-            android:paddingLeft="10dip"
-            android:paddingRight="10dip"
-            android:paddingTop="5dp"
-            android:autoText="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_toEndOf="@+id/compass"
-            android:layout_toRightOf="@+id/compass" />
+        <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+    </android.support.design.widget.AppBarLayout>
 
-        <TextView
-            android:layout_width="192dp"
-            android:layout_height="wrap_content"
-            android:text="@string/weatherAlert"
-            android:id="@+id/weatherAlert"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:textColor="#ff32b4f6"
-            android:paddingLeft="10dip"
-            android:paddingRight="10dip"
-            android:layout_gravity="right"
-            android:clickable="false"
-            android:layout_below="@+id/temperatureView"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_toRightOf="@+id/weatherView"
-            android:layout_toEndOf="@+id/weatherView" />
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
 
-        <ImageView
-            android:layout_width="21dip"
-            android:layout_height="21dip"
-            android:id="@+id/compass"
-            android:src="@android:drawable/ic_menu_compass"
-            android:layout_above="@+id/weatherAlert"
-            android:layout_toRightOf="@+id/weatherView"
-            android:layout_toEndOf="@+id/weatherView" />
+        <TextView android:layout_height="wrap_content"
+                  android:id="@+id/TextViewPreviousTrips"
+                  android:text="@string/previous_trips"
+                  android:layout_width="match_parent"
+                  style="@style/TextAppearance.AppCompat.Headline"
+                  android:gravity="center"/>
+
+        <ListView android:layout_height="match_parent"
+                  android:layout_width="match_parent"
+                  android:layout_below="@+id/TextViewPreviousTrips"
+                  android:id="@+id/ListSavedTrips"
+                  android:layout_above="@+id/ButtonStart"/>
+
+        <Button android:layout_height="95dp"
+                android:id="@+id/ButtonStart"
+                android:text="@string/startNewTrip"
+                android:textStyle="bold"
+                android:layout_width="fill_parent"
+                android:drawableLeft="@drawable/bike"
+                android:layout_margin="8dp"
+                android:layout_alignParentBottom="true"
+                android:hapticFeedbackEnabled="true" android:textSize="24sp"/>
 
     </RelativeLayout>
-
-    <Button android:layout_height="wrap_content" android:id="@+id/ButtonStart" android:text="@string/startNewTrip" android:textStyle="bold" android:layout_width="fill_parent" android:drawableLeft="@drawable/bike" android:layout_margin="8sp" android:hapticFeedbackEnabled="true" android:textSize="24sp"></Button>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:id="@+id/tempView"
-        android:textColor="#ff40cdff" />
-
-    <TextView android:layout_height="wrap_content" android:id="@+id/TextViewPreviousTrips" android:text="@string/previous_trips" android:layout_width="fill_parent" android:gravity="center"
-    android:layout_weight="0.38"></TextView><ListView android:layout_height="138dp" android:id="@+id/ListSavedTrips" android:layout_width="fill_parent"
-    android:layout_weight="0.36"></ListView>
-
-
-
-
-
-
 
 
 

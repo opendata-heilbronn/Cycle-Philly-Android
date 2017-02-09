@@ -36,7 +36,6 @@ import android.content.*;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -48,8 +47,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -59,21 +56,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import com.firebase.geofire.GeoFire;
-import com.firebase.geofire.GeoLocation;
-import com.firebase.geofire.GeoQuery;
-import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.*;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import de.grundid.plusrad.R;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class MainInput extends AppCompatActivity {
 
@@ -85,20 +81,11 @@ public class MainInput extends AppCompatActivity {
 	private final static int MENU_LEGAL_INFO = 3;
 	public final static int PREF_ANONID = 13;
 	final String DEGREE = "\u00b0";
-	DatabaseReference indegoRef;
-	DatabaseReference indegoGeofireRef;
 	private final static int CONTEXT_RETRY = 0;
 	private final static int CONTEXT_DELETE = 1;
 	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 	private LocationManager locationManager = null;
 	private LatLng mySpot = null;
-	TextView weatherText;
-	private TextView debugLocation;
-	Typeface weatherFont;
-	private RecyclerView nearbyStations;
-	private List<IndegoStation> indegoList = Collections.emptyList();
-	private DataSnapshot indegoDataList;
-	private RideIndegoAdapter indegoAdapter;
 	DbAdapter mDb;
 	private DatabaseReference rootRef;
 	private LocationListener locationListener;
@@ -159,10 +146,6 @@ public class MainInput extends AppCompatActivity {
 		// If we're recording or saving right now, jump to the existing activity.
 		// (This handles user who hit BACK button while recording)
 		setContentView(R.layout.main);
-		weatherFont = Typeface.createFromAsset(getAssets(), "cyclephilly.ttf");
-		weatherText = (TextView)findViewById(R.id.weatherView);
-		weatherText.setTypeface(weatherFont);
-		weatherText.setText(R.string.cloudy);
 		Intent rService = new Intent(this, RecordingService.class);
 		ServiceConnection sc = new ServiceConnection() {
 
@@ -204,78 +187,7 @@ public class MainInput extends AppCompatActivity {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
 		SharedPreferences settings = getSharedPreferences("PREFS", 0);
 		final String anon = settings.getString("" + PREF_ANONID, "NADA");
-		DatabaseReference weatherRef = rootRef.child("publicdata-weather-firebaseio-com").child("philadelphia");
-		DatabaseReference tempRef = rootRef.child("publicdata-weather-firebaseio-com").child("philadelphia")
-				.child("currently");
-		tempRef.addValueEventListener(new ValueEventListener() {
-
-			@Override
-			public void onDataChange(DataSnapshot dataSnapshot) {
-				if (dataSnapshot.exists()) {
-					Object val = dataSnapshot.getValue();
-					String cardinal = null;
-					TextView tempState = (TextView)findViewById(R.id.temperatureView);
-					//                TextView liveTemp = (TextView) findViewById(R.id.warning);
-					String apparentTemp = ((Map)val).get("apparentTemperature").toString();
-					String windSpeed = ((Map)val).get("windSpeed").toString();
-					Double windValue = (Double)((Map)val).get("windSpeed");
-					Long windBearing = (Long)((Map)val).get("windBearing");
-					//                liveTemp.setText(" "+apparentTemp.toString()+DEGREE);
-					WindDirection[] windDirections = WindDirection.values();
-					for (int i = 0; i < windDirections.length; i++) {
-						if (windDirections[i].startDegree < windBearing && windDirections[i].endDegree > windBearing) {
-							//Get Cardinal direction
-							cardinal = windDirections[i].cardinal;
-						}
-					}
-					if (windValue > 4) {
-						tempState.setTextColor(0xFFDC143C);
-						tempState.setText("winds " + cardinal + " at " + windSpeed + " mph. Ride with caution.");
-					} else {
-						tempState.setTextColor(0xFFFFFFFF);
-						tempState.setText("winds " + cardinal + " at " + windSpeed + " mph.");
-					}
-				}
-			}
-
-			@Override
-			public void onCancelled(DatabaseError databaseError) {
-			}
-		});
-		weatherRef.addValueEventListener(new ValueEventListener() {
-
-			@Override
-			public void onDataChange(DataSnapshot snapshot) {
-				if (snapshot.exists()) {
-					Object value = snapshot.getValue();
-					Object hourly = ((Map)value).get("currently");
-					String alert = ((Map)hourly).get("summary").toString();
-					//                TextView weatherAlert = (TextView) findViewById(R.id.weatherAlert);
-					//                weatherAlert.setText(alert);
-				}
-			}
-
-			@Override
-			public void onCancelled(DatabaseError firebaseError) {
-			}
-		});
 		createLocationListener();
-		nearbyStations = (RecyclerView)findViewById(R.id.nearbyStationList);
-		nearbyStations.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-		//Listener for Indego Changes
-		indegoRef = rootRef.child("phl-firebaseio-com").child("indego").child("kiosks");
-		indegoRef.addValueEventListener(new ValueEventListener() {
-
-			@Override
-			public void onDataChange(DataSnapshot dataSnapshot) {
-				//Updates! Add them to indego data list
-				indegoDataList = dataSnapshot;
-			}
-
-			@Override
-			public void onCancelled(DatabaseError firebaseError) {
-			}
-		});
 		// Register the listener with the Location Manager to receive location updates
 		locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
 		if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -298,7 +210,7 @@ public class MainInput extends AppCompatActivity {
 				}
 			}
 		});
-		toolbar = (Toolbar)findViewById(R.id.dashboard_bar);
+		toolbar = (Toolbar)findViewById(R.id.toolbar);
 		toolbar.setTitle(R.string.app_name);
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -344,51 +256,8 @@ public class MainInput extends AppCompatActivity {
 
 	private void proccessWithLocationPermission() {
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-		indegoGeofireRef = rootRef.child("phl-firebaseio-com").child("indego").child("_geofire");
-		GeoFire geoFire = new GeoFire(indegoGeofireRef);
 		mySpot = myCurrentLocation();
-		indegoList = new ArrayList<IndegoStation>();
 		System.out.println("lo: " + mySpot.toString());
-		GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mySpot.longitude, mySpot.latitude), 0.5);
-		geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
-
-			@Override
-			public void onKeyEntered(String key, GeoLocation location) {
-				System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude,
-						location.longitude));
-				//Create Indego Station object. To-do: check if object exists
-				IndegoStation station = new IndegoStation();
-				station.kioskId = key;
-				station.location = location;
-				if (indegoDataList != null) {
-					//get latest info from list
-					station.name = (String)indegoDataList.child(key).child("properties").child("name").getValue();
-				}
-				System.out.println(station.name);
-				indegoList.add(station);
-				//To-do: Add indego station info to RideIndegoAdapter
-			}
-
-			@Override
-			public void onKeyExited(String key) {
-			}
-
-			@Override
-			public void onKeyMoved(String key, GeoLocation location) {
-			}
-
-			@Override
-			public void onGeoQueryReady() {
-				System.out.println("GEO READY :" + indegoList.toString());
-				indegoAdapter = new RideIndegoAdapter(getApplicationContext(), indegoList);
-				nearbyStations.setAdapter(indegoAdapter);
-			}
-
-			@Override
-			public void onGeoQueryError(DatabaseError error) {
-				System.out.println("GEO error");
-			}
-		});
 	}
 
 	private LatLng myCurrentLocation() {
